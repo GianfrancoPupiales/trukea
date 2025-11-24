@@ -1,0 +1,53 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/trukeadb}
+    username: ${DB_USERNAME:trukea}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+
+  messages:
+    basename: messages,ValidationMessages
+    encoding: UTF-8
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+  mail:
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAIL_PORT:2525}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+websocket:
+  mode: ${WEBSOCKET_MODE:simple}
+
+rabbitmq:
+  host: ${RABBITMQ_HOST:localhost}
+  stomp:
+    port: ${RABBITMQ_STOMP_PORT:61613}
+  username: ${RABBITMQ_USERNAME:guest}
+  password: ${RABBITMQ_PASSWORD:guest}
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: debug
