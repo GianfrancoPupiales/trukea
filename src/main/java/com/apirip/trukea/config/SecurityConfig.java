@@ -1,7 +1,7 @@
-package com.apirip.trukeamonolito.config;
+package com.apirip.trukea.config;
 
-import com.apirip.trukeamonolito.auth.service.AuthUserDetailsService;
-import com.apirip.trukeamonolito.auth.web.LoginSuccessHandler;
+import com.apirip.trukea.auth.service.AuthUserDetailsService;
+import com.apirip.trukea.auth.web.LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,8 +21,7 @@ public class SecurityConfig {
 
     @Bean
     DaoAuthenticationProvider authProvider(AuthUserDetailsService uds, PasswordEncoder enc){
-        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
-        p.setUserDetailsService(uds);
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider(uds);
         p.setPasswordEncoder(enc);
         return p;
     }
