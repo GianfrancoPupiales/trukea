@@ -71,7 +71,7 @@ public class ProfileController {
             return "redirect:/signin";
         }
 
-        // Resolver foto nueva (opcional) en C:/trukeamonolito/uploads/students
+        // Resolver foto nueva (opcional) en C:/trukea/uploads/students
         String photoPath = resolvePhoto(form.newPhoto(), form.existingPhoto());
 
         // Si password viene vacío, el servicio conservará la anterior (ya implementado)
@@ -102,7 +102,7 @@ public class ProfileController {
 
     private String resolvePhoto(MultipartFile newPhoto, String existingPhoto) {
         if (newPhoto != null && !newPhoto.isEmpty()) {
-            // Guarda en C:/trukeamonolito/uploads/students y retorna solo el filename
+            // Guarda en C:/trukea/uploads/students y retorna solo el filename
             return storage.saveStudentPhoto(newPhoto);
         }
         // Si no se subió una nueva, conserva la existente (solo el nombre)

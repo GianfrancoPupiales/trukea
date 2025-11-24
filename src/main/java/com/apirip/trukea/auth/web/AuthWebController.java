@@ -51,7 +51,7 @@ public class AuthWebController {
         try {
             String photoFilename = null;
             if (photo != null && !photo.isEmpty()) {
-                // guarda en C:/trukeamonolito/uploads/students y retorna SOLO el nombre del archivo
+                // guarda en C:/trukea/uploads/students y retorna SOLO el nombre del archivo
                 photoFilename = storage.saveStudentPhoto(photo);
             }
 

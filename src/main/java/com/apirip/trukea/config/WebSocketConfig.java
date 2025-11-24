@@ -1,4 +1,4 @@
-package com.apirip.trukeamonolito.config;
+package com.apirip.trukea.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

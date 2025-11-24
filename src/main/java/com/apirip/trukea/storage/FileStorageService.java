@@ -10,7 +10,7 @@ import java.util.Objects;
 @Service
 public class FileStorageService {
 
-    private static final Path ROOT = Paths.get("C:/trukeamonolito/uploads");
+    private static final Path ROOT = Paths.get("C:/trukea/uploads");
     private static final Path STUDENTS = ROOT.resolve("students");
     private static final Path PRODUCTS = ROOT.resolve("products");
 
