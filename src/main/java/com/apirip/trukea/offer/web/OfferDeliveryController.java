@@ -1,0 +1,74 @@
+package com.apirip.trukea.offer.web;
+
+import com.apirip.trukea.offer.service.OfferService;
+import com.apirip.trukea.student.repo.StudentRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/offers")
+public class OfferDeliveryController {
+
+    private final OfferService offers;
+    private final StudentRepository students;
+
+    public OfferDeliveryController(OfferService offers, StudentRepository students) {
+        this.offers = offers; this.students = students;
+    }
+
+    private int me(Authentication auth){ return students.findByEmail(auth.getName()).orElseThrow().getIdStudent(); }
+
+    @GetMapping("/deliveries")
+    public String listDeliveries(Authentication auth, Model model){
+        int currentStudentId = me(auth);
+        model.addAttribute("pendingDeliveries", offers.findAcceptedPendingDeliveryForStudent(currentStudentId));
+        model.addAttribute("currentStudentId", currentStudentId);
+        return "deliveries";
+    }
+
+    @PostMapping("/deliveries/confirm")
+    public String confirm(@RequestParam int offerId,
+                         @RequestParam boolean wasDelivered,
+                         @RequestParam(required = false) Integer rating,
+                         Authentication auth,
+                         RedirectAttributes ra){
+        try {
+            if (wasDelivered && (rating == null || rating < 1 || rating > 5)) {
+                ra.addFlashAttribute("messageType", "danger");
+                ra.addFlashAttribute("message", "Debes seleccionar una calificación de 1 a 5 estrellas.");
+                return "redirect:/offers/deliveries";
+            }
+
+            boolean success = offers.confirmDelivery(offerId, me(auth), wasDelivered, rating);
+            if (success) {
+                if (wasDelivered) {
+                    // Verificar si el intercambio se completó (ambas partes confirmaron y calificaron)
+                    var offer = offers.findById(offerId);
+                    if (offer != null && offer.isBothConfirmedAndRated()) {
+                        ra.addFlashAttribute("messageType", "success");
+                        ra.addFlashAttribute("message", "¡Felicitaciones! Tu intercambio se completó exitosamente. Ambas partes confirmaron la entrega y calificaron la experiencia. El intercambio ha sido movido al historial.");
+                    } else {
+                        ra.addFlashAttribute("messageType", "success");
+                        ra.addFlashAttribute("message", "Entrega confirmada con calificación de " + rating + " estrellas. El trueque se completará cuando ambas partes confirmen.");
+                    }
+                } else {
+                    ra.addFlashAttribute("messageType", "warning");
+                    ra.addFlashAttribute("message", "Entrega cancelada. Los productos han sido reactivados y has recibido una penalización en tu reputación.");
+                }
+            } else {
+                ra.addFlashAttribute("messageType", "danger");
+                ra.addFlashAttribute("message", "No se pudo confirmar la entrega.");
+            }
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("messageType", "danger");
+            ra.addFlashAttribute("message", e.getMessage());
+        } catch (Exception e) {
+            ra.addFlashAttribute("messageType", "danger");
+            ra.addFlashAttribute("message", "Error al confirmar la entrega: " + e.getMessage());
+        }
+        return "redirect:/offers/deliveries";
+    }
+}
